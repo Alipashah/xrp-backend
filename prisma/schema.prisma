@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model parentNft {
+  parentId Int      @id @default(autoincrement())
+  bredAt   DateTime @default(now())
+  tokenId  Bytes    @unique @db.ByteA
+  isBred   Boolean
+  gender   Gender
+  spouseId Bytes    @unique @db.ByteA
+  child    childNft @relation(fields: [childId], references: [childId])
+  childId  Int
+}
+
+model childNft {
+  childId    Int       @id @default(autoincrement())
+  isBorn     Boolean
+  bornAt     DateTime?
+  txnHash    String?   @unique
+  gender     Gender
+  background String
+  skin       String
+  eyewear    String
+  mouth      String
+  clothing   String
+  eyes       String
+  headgear   String
+  accesories String
+
+  parents parentNft[]
+
+  @@unique([gender, background, skin, eyewear, mouth, clothing, eyes, headgear, accesories], name: "traits")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
